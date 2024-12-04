@@ -25,9 +25,14 @@ public class InputService {
         {
             if(getRequestDown().contains(floorNo))
             {
-                System.out.print("Hey please enter ur destination floor");
+                System.out.print("Hey please enter ur destination floor: ");
                 Scanner sc=new Scanner(System.in);
                 int destfloorNo=sc.nextInt();
+                if(destfloorNo<=0||destfloorNo>elevatorCar.floorButtons.size()-1)
+                {
+                    System.out.println("wrong input");
+                    return;
+                }
                 elevatorCar.floorButtons.get(destfloorNo-1).press(direction);
             }
         }
@@ -37,6 +42,11 @@ public class InputService {
                 System.out.print("Hey please enter ur destination floor: ");
                 Scanner sc=new Scanner(System.in);
                 int destfloorNo=sc.nextInt();
+                if(destfloorNo<=0||destfloorNo>elevatorCar.floorButtons.size())
+                {
+                    System.out.println("wrong input");
+                    return;
+                }
                 elevatorCar.floorButtons.get(destfloorNo-1).press(direction);
             }
         }

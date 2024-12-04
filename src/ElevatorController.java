@@ -110,14 +110,10 @@ public class ElevatorController {
     public void setPendingUp(List<Integer> pendingUp) {
         this.pendingUp = pendingUp;
     }
-    public void pause()
+    public void pauseAndResume()
     {
         currentState=idleState;
         currentState.openDoor();
-
-    }
-    public void resume()
-    {
         currentState.closeDoor();
         currentState=moveState;
     }
@@ -148,15 +144,28 @@ public class ElevatorController {
                             inputService.getRequestUp().add(floorNo);
                         }
                         if(upQueue.isEmpty()) {
-                            if(currentFloor<floorNo) {
-                                upQueue.add(floorNo);
+                            if(currentFloor<=floorNo) {
+                                if(external||currentFloor<floorNo) {
+                                    upQueue.add(floorNo);
+                                }
+                                else if(currentFloor==floorNo)
+                                {
+                                    return;
+                                }
+
                             }
                             else{
-                                System.out.println("Unprocessable request");
+                                System.out.println("Unprocessable request to go floor no "+(floorNo+1)+" by moving up "+this.direction+" is the direction of elevator no "+this.id);
                             }
                         }
-                        else if(upQueue.peek()<floorNo) {
-                        upQueue.add(floorNo);
+                        else if(upQueue.peek()<=floorNo) {
+                            if(external||currentFloor<floorNo) {
+                                upQueue.add(floorNo);
+                            }
+                            else if(currentFloor==floorNo)
+                            {
+                                return;
+                            }
                     }
                         else{
                             if(upQueue.peek()>floorNo&&external)
@@ -164,7 +173,7 @@ public class ElevatorController {
                                 pendingUp.add(floorNo);
                             }
                             else {
-                                System.out.println("invalid request");
+                                System.out.println("Unprocessable request to go floor no "+(floorNo+1)+" by moving up "+this.direction+" is the direction of elevator no "+this.id);
                             }
                         }
                     }
@@ -173,21 +182,32 @@ public class ElevatorController {
                         inputService.getRequestDown().add(floorNo);
                     }
                     if (downQueue.isEmpty()) {
-                        if (currentFloor > floorNo)
-                            downQueue.add(floorNo);
+                        if (currentFloor >= floorNo) {
+                            if (external||currentFloor >floorNo) {
+                                downQueue.add(floorNo);
+                            } else if (currentFloor == floorNo) {
+                                return;
+                            }
+                        }
                         else {
-                            System.out.println("Unprocessable request");
+                            System.out.println("Unprocessable request to go floor no "+(floorNo+1)+" by moving down "+this.direction+" is the direction of elevator no "+this.id);
                         }
                     }
-                    else if(downQueue.peek()>floorNo) {
-                        downQueue.add(floorNo);
+                    else if(downQueue.peek()>=floorNo) {
+                        if (external||currentFloor > floorNo) {
+                            downQueue.add(floorNo);
+                        } else if (currentFloor == floorNo) {
+                            return;
+                        }
                     }
                         else{
                             if(downQueue.peek()>floorNo&&external)
                             {
                                 pendingDown.add(floorNo);
                             }
-                            System.out.println("invalid request");
+                            else {
+                                System.out.println("Unprocessable request to go floor no "+(floorNo+1)+" by moving down "+this.direction+" is the direction of elevator no "+this.id);
+                            }
                         }
                     }
             }

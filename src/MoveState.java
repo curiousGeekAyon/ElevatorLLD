@@ -33,23 +33,27 @@ public class MoveState extends ElevatorControllerState{
     {
             ElevatorCar elevatorCar=elevatorController.getElevatorCar();
             elevatorCar.setDirection(Direction.DOWN);
+            elevatorController.setDirection(Direction.DOWN);
             PriorityQueue<Integer>currRequestQueue=elevatorController.getDownQueue();
             if(currRequestQueue.isEmpty()&&elevatorController.getUpQueue().isEmpty())
             {
                 elevatorController.setCurrentState(elevatorController.idleState);
-                System.out.println("Elevator is now in idle state at "+elevatorCar.getFloorNo()+"th floor");
+                if(elevatorController.getCurrentFloor()<elevatorCar.getFloorButtons().size()-1)
+                    {
+                        elevatorController.setCurrentFloor(elevatorCar.getFloorButtons().size()-1);
+                        System.out.println("Elevator no "+elevatorController.getId()+" Elevator is now in idle state at "+(elevatorCar.getFloorButtons().size())+"th floor");
+                    }
+
                 return;
             }
-            elevatorController.setDirection(Direction.DOWN);
             InputService inputService=elevatorController.inputService;
             while(!currRequestQueue.isEmpty())
             {
                 int floorNo=currRequestQueue.poll();
-                System.out.println("Elevator no "+elevatorController.getId()+" Arrived at floor no "+floorNo+"by moving down");
-                elevatorController.pause();
+                System.out.println("Elevator no "+elevatorController.getId()+" Arrived at floor no "+(floorNo+1)+"by moving down");
+                elevatorController.pauseAndResume();
                 elevatorController.setCurrentFloor(floorNo);
                 inputService.inputSeviceProvider(Direction.DOWN,floorNo);
-                elevatorController.resume();
             }
             if(!elevatorController.getPendingDown().isEmpty())
             {   List<Integer> pendingFloors=elevatorController.getPendingDown();
@@ -64,23 +68,26 @@ public class MoveState extends ElevatorControllerState{
     private void moveUp() {
         ElevatorCar elevatorCar=elevatorController.getElevatorCar();
         PriorityQueue<Integer>currRequestQueue=elevatorController.getUpQueue();
+        elevatorController.setDirection(Direction.UP);
         elevatorCar.setDirection(Direction.UP);
         if(currRequestQueue.isEmpty()&&elevatorController.getDownQueue().isEmpty())
         {
             elevatorController.setCurrentState(elevatorController.idleState);
-            System.out.println("Elevator is now in idle state at "+elevatorCar.getFloorNo()+"th floor");
+            if(elevatorCar.getFloorNo()>0)
+            {
+                elevatorCar.setFloorNo(0);
+            }
+            System.out.println("Elevator no "+elevatorController.getId()+" Elevator is now in idle state at "+(elevatorCar.getFloorNo()+1)+"th floor");
             return;
         }
-        elevatorController.setDirection(Direction.UP);
         InputService inputService=elevatorController.inputService;
         while(!currRequestQueue.isEmpty())
             {
                 int floorNo=currRequestQueue.poll();
                 System.out.println("Elevator no "+elevatorController.getId()+" Arrived at floor no "+(floorNo+1)+" by moving up");
-                elevatorController.pause();
+                elevatorController.pauseAndResume();
                 elevatorController.setCurrentFloor(floorNo);
                 inputService.inputSeviceProvider(Direction.UP,floorNo);
-                elevatorController.resume();
             }
         if(!elevatorController.getPendingUp().isEmpty())
         {   List<Integer> pendingFloors=elevatorController.getPendingUp();
@@ -89,6 +96,7 @@ public class MoveState extends ElevatorControllerState{
                 currRequestQueue.add(floor);
             }
         }
+//        if(elevatorController.getDirection()==Direction.UP)
         moveDown();
     }
 }
